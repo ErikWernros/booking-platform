@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO Test</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 5px; padding: 10px; }
+        #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; margin: 10px 0; }
+        .message { margin: 5px 0; padding: 5px; border-left: 3px solid #007acc; }
+        .success { border-left-color: green; }
+        .error { border-left-color: red; }
+        .info { border-left-color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🔔 Socket.IO Test Client</h1>
+    
+    <div>
+        <button onclick="connect()">🔌 Connect</button>
+        <button onclick="joinAdmin()">👑 Join Admin</button>
+        <button onclick="testConnection()">🧪 Test Connection</button>
+    </div>
+
+    <h3>Test Data:</h3>
+    <div>
+        <input type="text" id="token" placeholder="JWT Token" style="width: 300px;" />
+        <input type="text" id="roomId" placeholder="Room ID" value="6913a0449a9074be1cbf1d4d" />
+        <button onclick="createTestBooking()">📅 Skapa Test Bokning</button>
+    </div>
+
+    <h3>Messages:</h3>
+    <div id="messages"></div>
+
+    <script>
+        let socket;
+
+        function connect() {
+            socket = io('http://localhost:5000');
+            
+            socket.on('connect', () => {
+                addMessage('✅ Ansluten till Socket.IO: ' + socket.id, 'success');
+            });
+
+            socket.on('booking-created', (data) => {
+                addMessage('📨 BOKNING SKAPAD: ' + data.message + ' - ' + data.booking.room, 'success');
+            });
+
+            socket.on('booking-updated', (data) => {
+                addMessage('✏️ BOKNING UPPDATERAD: ' + data.message + ' - ' + data.booking.room, 'info');
+            });
+
+            socket.on('booking-deleted', (data) => {
+                addMessage('🗑️ BOKNING RADERAD: ' + data.message, 'error');
+            });
+
+            socket.on('disconnect', () => {
+                addMessage('❌ Frånkopplad från Socket.IO', 'error');
+            });
+
+            socket.on('connect_error', (error) => {
+                addMessage('❌ Anslutningsfel: ' + error.message, 'error');
+            });
+        }
+
+        function joinAdmin() {
+            if (socket && socket.connected) {
+                socket.emit('join-admin');
+                addMessage('👑 Gick med i admin channel', 'success');
+            } else {
+                addMessage('❌ Ej ansluten till Socket.IO', 'error');
+            }
+        }
+
+        function testConnection() {
+            if (socket && socket.connected) {
+                addMessage('✅ Socket.IO anslutning fungerar!', 'success');
+            } else {
+                addMessage('❌ Ingen Socket.IO anslutning', 'error');
+            }
+        }
+
+        function createTestBooking() {
+            const token = document.getElementById('token').value;
+            const roomId = document.getElementById('roomId').value;
+            
+            if (!token) {
+                addMessage('❌ Ange JWT token först', 'error');
+                return;
+            }
+
+            addMessage('🔄 Skapar testbokning...', 'info');
+
+            fetch('http://localhost:5000/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({
+                    roomId: roomId,
+                    startTime: new Date(Date.now() + 86400000).toISOString(), // imorgon
+                    endTime: new Date(Date.now() + 90000000).toISOString(),
+                    purpose: 'Socket.IO Test Bokning',
+                    numberOfParticipants: 2
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    addMessage('✅ Bokning skapad via API: ' + data.data._id, 'success');
+                } else {
+                    addMessage('❌ API Error: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                addMessage('❌ Fetch Error: ' + error, 'error');
+            });
+        }
+
+        function addMessage(msg, type = 'info') {
+            const div = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong> - ${msg}`;
+            div.appendChild(messageDiv);
+            div.scrollTop = div.scrollHeight;
+        }
+
+        // Auto-connect on page load
+        window.onload = connect;
+    </script>
+</body>
+</html>
