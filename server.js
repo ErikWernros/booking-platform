@@ -84,7 +84,14 @@ const PORT = process.env.PORT || 5000;
 // Database connection med bättre felhantering
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/coworking_db');
+    // ANVÄND BARA MONGODB_URI - INTE LOCALHOST FALLBACK
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 30000,
+      socketTimeoutMS: 45000,
+      maxPoolSize: 10,
+      retryWrites: true,
+      w: 'majority'
+    });
     console.log('✅ Ansluten till MongoDB');
     
     // Anslut till Redis
@@ -92,16 +99,15 @@ const connectDB = async () => {
     
     server.listen(PORT, () => {
       console.log(`🚀 Server körs på port ${PORT}`);
-      console.log(`📚 API: http://localhost:${PORT}`);
-      console.log(`❤️  Health check: http://localhost:${PORT}/health`);
-      console.log(`🔐 Auth: http://localhost:${PORT}/api/auth`);
-      console.log(`🔔 Socket.IO: http://localhost:${PORT}/socket-test.html`);
+      console.log(`📚 API: https://booking-platform-uctc.onrender.com`);
+      console.log(`❤️  Health check: https://booking-platform-uctc.onrender.com/health`);
+      console.log(`🔐 Auth: https://booking-platform-uctc.onrender.com/api/auth`);
+      console.log(`🔔 Socket.IO: https://booking-platform-uctc.onrender.com/socket-test.html`);
       console.log(`⚡ Redis: Caching aktivt`);
     });
   } catch (error) {
     console.error('❌ MongoDB anslutningsfel:', error.message);
-    console.log('💡 Tips: Installera MongoDB eller använd MongoDB Atlas');
-    console.log('📚 Läs mer: https://docs.mongodb.com/guides/server/install/');
+    console.log('💡 Tips: Kontrollera MONGODB_URI environment variabeln i Render');
     
     // Starta servern ändå (för testing)
     server.listen(PORT, () => {
