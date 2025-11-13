@@ -98,21 +98,21 @@ const connectDB = async () => {
     await connectRedis();
     
     server.listen(PORT, () => {
-      console.log(`🚀 Server körs på port ${PORT}`);
-      console.log(`📚 API: https://booking-platform-uctc.onrender.com`);
-      console.log(`❤️  Health check: https://booking-platform-uctc.onrender.com/health`);
-      console.log(`🔐 Auth: https://booking-platform-uctc.onrender.com/api/auth`);
-      console.log(`🔔 Socket.IO: https://booking-platform-uctc.onrender.com/socket-test.html`);
-      console.log(`⚡ Redis: Caching aktivt`);
+      console.log(`Server körs på port ${PORT}`);
+      console.log(`API: https://booking-platform-uctc.onrender.com`);
+      console.log(`Health check: https://booking-platform-uctc.onrender.com/health`);
+      console.log(`Auth: https://booking-platform-uctc.onrender.com/api/auth`);
+      console.log(`Socket.IO: https://booking-platform-uctc.onrender.com/socket-test.html`);
+      console.log(`Redis: Caching aktivt`);
     });
   } catch (error) {
-    console.error('❌ MongoDB anslutningsfel:', error.message);
-    console.log('💡 Tips: Kontrollera MONGODB_URI environment variabeln i Render');
+    console.error('MongoDB anslutningsfel:', error.message);
+    console.log('Tips: Kontrollera MONGODB_URI environment variabeln i Render');
     
     // Starta servern ändå (för testing)
     server.listen(PORT, () => {
-      console.log(`🚀 Server körs på port ${PORT} (utan databas)`);
-      console.log('⚠️  OBS: Databasen är inte ansluten!');
+      console.log(`Server körs på port ${PORT} (utan databas)`);
+      console.log('OBS: Databasen är inte ansluten!');
     });
   }
 };

@@ -17,16 +17,16 @@
     <h1>🔔 Socket.IO Test Client</h1>
     
     <div>
-        <button onclick="connect()">🔌 Connect</button>
-        <button onclick="joinAdmin()">👑 Join Admin</button>
-        <button onclick="testConnection()">🧪 Test Connection</button>
+        <button onclick="connect()">Connect</button>
+        <button onclick="joinAdmin()">Join Admin</button>
+        <button onclick="testConnection()">Test Connection</button>
     </div>
 
     <h3>Test Data:</h3>
     <div>
         <input type="text" id="token" placeholder="JWT Token" style="width: 300px;" />
         <input type="text" id="roomId" placeholder="Room ID" value="6913a0449a9074be1cbf1d4d" />
-        <button onclick="createTestBooking()">📅 Skapa Test Bokning</button>
+        <button onclick="createTestBooking()">Skapa Test Bokning</button>
     </div>
 
     <h3>Messages:</h3>
@@ -39,44 +39,44 @@
             socket = io();
             
             socket.on('connect', () => {
-                addMessage('✅ Ansluten till Socket.IO: ' + socket.id, 'success');
+                addMessage('Ansluten till Socket.IO: ' + socket.id, 'success');
             });
 
             socket.on('booking-created', (data) => {
-                addMessage('📨 BOKNING SKAPAD: ' + data.message + ' - ' + data.booking.room, 'success');
+                addMessage('BOKNING SKAPAD: ' + data.message + ' - ' + data.booking.room, 'success');
             });
 
             socket.on('booking-updated', (data) => {
-                addMessage('✏️ BOKNING UPPDATERAD: ' + data.message + ' - ' + data.booking.room, 'info');
+                addMessage('BOKNING UPPDATERAD: ' + data.message + ' - ' + data.booking.room, 'info');
             });
 
             socket.on('booking-deleted', (data) => {
-                addMessage('🗑️ BOKNING RADERAD: ' + data.message, 'error');
+                addMessage('BOKNING RADERAD: ' + data.message, 'error');
             });
 
             socket.on('disconnect', () => {
-                addMessage('❌ Frånkopplad från Socket.IO', 'error');
+                addMessage('Frånkopplad från Socket.IO', 'error');
             });
 
             socket.on('connect_error', (error) => {
-                addMessage('❌ Anslutningsfel: ' + error.message, 'error');
+                addMessage('Anslutningsfel: ' + error.message, 'error');
             });
         }
 
         function joinAdmin() {
             if (socket && socket.connected) {
                 socket.emit('join-admin');
-                addMessage('👑 Gick med i admin channel', 'success');
+                addMessage('Gick med i admin channel', 'success');
             } else {
-                addMessage('❌ Ej ansluten till Socket.IO', 'error');
+                addMessage('Ej ansluten till Socket.IO', 'error');
             }
         }
 
         function testConnection() {
             if (socket && socket.connected) {
-                addMessage('✅ Socket.IO anslutning fungerar!', 'success');
+                addMessage('Socket.IO anslutning fungerar!', 'success');
             } else {
-                addMessage('❌ Ingen Socket.IO anslutning', 'error');
+                addMessage('Ingen Socket.IO anslutning', 'error');
             }
         }
 
@@ -85,11 +85,11 @@
             const roomId = document.getElementById('roomId').value;
             
             if (!token) {
-                addMessage('❌ Ange JWT token först', 'error');
+                addMessage('Ange JWT token först', 'error');
                 return;
             }
 
-            addMessage('🔄 Skapar testbokning...', 'info');
+            addMessage('Skapar testbokning...', 'info');
 
             fetch('/api/bookings', {
                 method: 'POST',
@@ -108,13 +108,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    addMessage('✅ Bokning skapad via API: ' + data.data._id, 'success');
+                    addMessage('Bokning skapad via API: ' + data.data._id, 'success');
                 } else {
-                    addMessage('❌ API Error: ' + data.message, 'error');
+                    addMessage('API Error: ' + data.message, 'error');
                 }
             })
             .catch(error => {
-                addMessage('❌ Fetch Error: ' + error, 'error');
+                addMessage('Fetch Error: ' + error, 'error');
             });
         }
 
