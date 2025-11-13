@@ -20,32 +20,6 @@ const server = http.createServer(app);
 const io = initWebSocket(server);
 app.set('io', io);
 
-// ==================== SOCKET.IO HANDLING ====================
-io.on('connection', (socket) => {
-  console.log('🔌 Socket.IO användare ansluten:', socket.id);
-
-  // Hantera join-events
-  socket.on('join-admin', () => {
-    socket.join('admin-channel');
-    console.log(`👑 Användare ${socket.id} gick med i admin-kanal`);
-  });
-
-  socket.on('join-room', (data) => {
-    socket.join(`room-${data.roomId}`);
-    console.log(`👥 Användare ${socket.id} gick med i rum ${data.roomId}`);
-  });
-
-  socket.on('join-user', (data) => {
-    socket.join(`user-${data.userId}`);
-    console.log(`👤 Användare ${socket.id} gick med i användarkanal ${data.userId}`);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('❌ Socket.IO användare frånkopplad:', socket.id);
-  });
-});
-// ==================== SLUT SOCKET.IO ====================
-
 // Middleware
 app.use(express.json());
 

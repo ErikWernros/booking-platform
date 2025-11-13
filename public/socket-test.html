@@ -36,7 +36,7 @@
         let socket;
 
         function connect() {
-            socket = io('http://localhost:5000');
+            socket = io();
             
             socket.on('connect', () => {
                 addMessage('✅ Ansluten till Socket.IO: ' + socket.id, 'success');
@@ -91,7 +91,7 @@
 
             addMessage('🔄 Skapar testbokning...', 'info');
 
-            fetch('http://localhost:5000/api/bookings', {
+            fetch('/api/bookings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
